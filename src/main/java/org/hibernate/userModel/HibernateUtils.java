@@ -1,4 +1,4 @@
-package com.rocee;
+package org.hibernate.userModel;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;

@@ -1,4 +1,4 @@
-package com.rocee;
+package org.hibernate.userModel;
 
 import java.util.List;
 import java.util.Scanner;
@@ -6,6 +6,9 @@ import java.util.Scanner;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+
+import com.userController.User;
+
 import org.hibernate.Transaction;
 
 import org.hibernate.Session;

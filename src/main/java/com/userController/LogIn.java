@@ -1,10 +1,11 @@
-package com.rocee;
+package com.userController;
 
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.hibernate.Session;
+import org.hibernate.userModel.dbOperations;
 
 public class LogIn {
 
@@ -12,7 +13,7 @@ public class LogIn {
         User user = null;
         List<User> users = null;
         users = dbOperations.readByUsername(username);
-        
+
         if (users.isEmpty()) {
             System.out.println("username is incorrect or doesn't exit ");
         }else{

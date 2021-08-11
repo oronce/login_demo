@@ -1,5 +1,5 @@
 
-package com.rocee;
+package com.userController;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
