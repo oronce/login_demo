@@ -21,8 +21,10 @@ public class IndexPage extends JPanel {
         
         g.setFont(f1);
         g.setColor(Color.BLACK);
-        System.out.println("jpannel size:" + getSize());
         g.drawString("HEY!! Welcome", 50, 110);
-          
+    }
+
+    public void setComponentVisible() {
+        
     }
 }
