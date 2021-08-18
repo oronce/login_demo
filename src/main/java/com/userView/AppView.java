@@ -4,9 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.PseudoColumnUsage;
 import java.util.regex.*;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -14,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
+import javax.swing.SwingUtilities;
 
 import java.awt.*;
 public class AppView extends JFrame implements ActionListener,MouseListener{
@@ -22,6 +25,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     private JLabel         usernameLabel;
     private JTextField     usernameField;
     private boolean        isUsernameValid; 
+    private boolean        isPasswordValid;
     private JPasswordField passwordField;
     private JLabel         passwordLabel;
     private JCheckBox      showPasswordCheckBox;
@@ -32,6 +36,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     private JLabel         logInHyperlinkLabel;
     private JLabel         usernameConstraintsLabel;  
     private JLabel         passwordConstraintsLabel;
+    private ImageIcon      showPasswordIcon;
+    private JLabel         showPassWordIconJLabel;
 
     public AppView(){
 
@@ -41,7 +47,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         usernameField            = new JTextField();
         passwordLabel            = new JLabel("password");
         passwordField            = new JPasswordField() ;
-        showPasswordCheckBox     = new JCheckBox("Show Password");
+        showPasswordCheckBox     = new JCheckBox("");
         logInButton              = new JButton("LogIn");
         signUpButton             = new JButton("SignUp"); 
         textLabel                = new JLabel("Don't have an account?");
@@ -49,23 +55,30 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         logInHyperlinkLabel      = new JLabel("LogIn");  
         usernameConstraintsLabel = new JLabel("");
         passwordConstraintsLabel = new JLabel("");
+        showPasswordIcon         = new ImageIcon("/home/rocee/project/java_project/login_app/public/show_password.png",
+                                         "a pretty but meaningless splat"); 
+        showPassWordIconJLabel = new JLabel("") ;                                
+        //
+
 
         //set loacation and size of components
         usernameLabel.setBounds(70, 270, 80, 20);
         usernameField.setBounds(150, 265, 170, 30);
         passwordLabel.setBounds(70, 350, 80, 20);
         passwordField.setBounds(150, 345, 170, 30);
-        showPasswordCheckBox.setBounds(150, 375, 150, 30);
-        logInButton.setBounds(70, 420, 100, 30);
-        signUpButton.setBounds(70, 420, 100, 30);
-        textLabel.setBounds(175, 425, 190, 20);
+        showPasswordCheckBox.setBounds(350, 347, 150, 30);
+        logInButton.setBounds(70, 430, 100, 30);
+        signUpButton.setBounds(70, 430, 100, 30);
+        textLabel.setBounds(175, 435, 190, 20);
+
+        signUpHyperlinkLabel.setBounds(355, 435, 50, 20);
+        logInHyperlinkLabel.setBounds(365, 435, 50, 20);
 
         usernameConstraintsLabel.setBounds(150, 260, 280, 100);
-        
+        passwordConstraintsLabel.setBounds(150, 390, 150, 30);
 
-        signUpHyperlinkLabel.setBounds(355, 425, 50, 20);
-        logInHyperlinkLabel.setBounds(365, 425, 50, 20);
-        
+        showPassWordIconJLabel.setIcon(showPasswordIcon);
+        showPassWordIconJLabel.setBounds(320, 314, 100, 100);
 
         //add components to indexPage or conatainer(Pane)
         indexPage.add(usernameLabel);
@@ -77,6 +90,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         indexPage.add(textLabel);
         indexPage.add( signUpHyperlinkLabel);
         indexPage.add(usernameConstraintsLabel);
+        indexPage.add(passwordConstraintsLabel);
+        indexPage.add(showPassWordIconJLabel);
 
         //Adding Event Handling
         logInButton.addActionListener(this);
@@ -88,100 +103,93 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         usernameField.getDocument().addDocumentListener(new TextFieldListener(){
             @Override
             public void insertUpdate(DocumentEvent event) {
-
-                isUsernameValid = true;
-                System.out.println("\n");
-                
-                do {
-                    if (Pattern.compile("^[a-zA-Z0-9].*$").matcher(usernameField.getText()).matches()) {
-                        System.out.println("true for first character must be alphanumeric");
-                    }else{
-                        
-                        isUsernameValid = false;
-                        usernameConstraintsLabel.setText("! first character must be alphanumeric");
-                        break;
-                    }
-
-                    if ( (Pattern.compile("^([\\w])+$").matcher(usernameField.getText()).matches()) ) {
-                        System.out.println("true only \"_\" metacharacter is allowed");
-                    }else{
-                        isUsernameValid = false;
-                        usernameConstraintsLabel.setText("only \"_\" metacharacter is allowed");
-                        break;
-                    }
-
-                    if (Pattern.compile("^.{3,}$").matcher(usernameField.getText()).matches() ) {
-                        System.out.println("true at least 3 character");
-                    }else{
-                        System.out.println("at least 3 character settin to false");
-                        isUsernameValid = false;
-                        usernameConstraintsLabel.setText("at least 3 character");
-                        break;
-                    }
-                }while (isUsernameValid == false);
-
-                System.out.println("isUserNameValid=" + isUsernameValid);
-                if (isUsernameValid) {
-                    usernameConstraintsLabel.setVisible(false);
-                }else{
-                    System.out.println("im hide myself");
-                    usernameConstraintsLabel.setVisible(true);
-                }
-
+                processUsernameValidation();
             }
 
             public void removeUpdate(DocumentEvent event) {
+                processUsernameValidation();
+            }
+
+            private void processUsernameValidation(){
+                isUsernameValid = true;
+                String userInput = usernameField.getText();
 
                 //no validation for empty string
                 if (usernameField.getText().length() == 0) {
-                    usernameConstraintsLabel.setText("username is empty");
+                    usernameConstraintsLabel.setText("! username is empty");
                     return;
                 }
+                
+                //display error once a regex pattern doesn't match input
+                if (Utilities.isRegExPatternMatching("^[a-zA-Z0-9].*$", userInput ) == false ) {
+                    isUsernameValid = false;
+                    usernameConstraintsLabel.setText("! first character must be alphanumeric");
 
-                do {
-                    if (Pattern.compile("^[a-zA-Z0-9].*$").matcher(usernameField.getText()).matches()) {
-                        System.out.println("true for first character must be alphanumeric");
-                    }else{
-                        
-                        isUsernameValid = false;
-                        usernameConstraintsLabel.setText("! first character must be alphanumeric");
-                        break;
-                    }
+                }else if ( Utilities.isRegExPatternMatching("^([\\w])+$", userInput) == false ) {
+                    isUsernameValid = false;
+                    usernameConstraintsLabel.setText("! only \"_\" metacharacter is allowed");
 
-                    if ( (Pattern.compile("^([\\w])+$").matcher(usernameField.getText()).matches()) ) {
-                        System.out.println("true only \"_\" metacharacter is allowed");
-                    }else{
-                        isUsernameValid = false;
-                        usernameConstraintsLabel.setText("only \"_\" metacharacter is allowed");
-                        break;
-                    }
-
-                    if (Pattern.compile("^.{3,}$").matcher(usernameField.getText()).matches() ) {
-                        System.out.println("true at least 3 character");
-                    }else{
-                        System.out.println("at least 3 character settin to false");
-                        isUsernameValid = false;
-                        usernameConstraintsLabel.setText("at least 3 character");
-                        break;
-                    }
-                }while (isUsernameValid == false);
-
-                System.out.println("isUserNameValid=" + isUsernameValid);
+                }else if (Utilities.isRegExPatternMatching("^.{3,}$", userInput) == false ) {
+                    isUsernameValid = false;
+                    usernameConstraintsLabel.setText("! at least 3 character");
+                }
+                
                 if (isUsernameValid) {
                     usernameConstraintsLabel.setVisible(false);
+                    usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
+                    
                 }else{
-                    System.out.println("im hide myself");
                     usernameConstraintsLabel.setVisible(true);
+                    usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#FF4500")));
                 }
             }
             
         });
+        passwordField.getDocument().addDocumentListener(new TextFieldListener(){
 
+            @Override
+            public void insertUpdate(DocumentEvent event) {
+               processPasswordValidation();
+            }
+        
+            @Override
+            public void removeUpdate(DocumentEvent event) {
+              processPasswordValidation();
+            }
+            
+            private void processPasswordValidation(){
+                Runnable doPasswordValidation = new Runnable() {
+                    @Override
+                    public void run() {
+                       isPasswordValid = true;
+                       if (passwordField.getPassword().length < 8) {
+                           passwordConstraintsLabel.setText("8 character at least");
+                           isPasswordValid = false;
+                       }
 
+                       if (passwordField.getPassword().length ==0 ) {
+                           passwordConstraintsLabel.setText("password is empty");
+                       }
 
+                       if (isPasswordValid) {
+                            passwordConstraintsLabel.setVisible(false);
+                            passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
+                        }else{
+                            passwordConstraintsLabel.setVisible(true);
+                            passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#FF4500")));
+                        }
+                    }
+                };       
+                SwingUtilities.invokeLater(doPasswordValidation);
+            }
+        });
+
+        
 
         //test section and addStyleToComponent
         usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
+        passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
+        
         passwordField.setEchoChar('*');
         
         
@@ -192,6 +200,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         signUpHyperlinkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         usernameConstraintsLabel.setForeground(Color.decode("#CD5C5C"));
+        passwordConstraintsLabel.setForeground(Color.decode("#CD5C5C"));
 
         //build
         setLocation(600, 150);
