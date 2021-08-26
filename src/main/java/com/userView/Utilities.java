@@ -14,4 +14,12 @@ public class Utilities {
            return false;
         }  
     }
+    
+    public static String arrayToString(char[] charArray){
+        String str = "";
+        for(int i=0; i<charArray.length;  ++i ){
+            str +=charArray[i];
+        }
+        return str;
+    }
 }

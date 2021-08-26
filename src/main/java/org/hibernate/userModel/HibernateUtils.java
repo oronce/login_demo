@@ -5,7 +5,10 @@ import javax.persistence.Persistence;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
+/**
+ * set up database and load session via hibernate
+ *
+ */
 public class HibernateUtils {
 
     private static SessionFactory sessionFactory = null;

@@ -15,6 +15,11 @@ public class AppTest
     @Test
     public void shouldAnswerWithTrue()
     {
-        assertTrue( true );
+        assertTrue( false );
+    }
+
+    @Test
+    public void testUsernameValidation(){
+        
     }
 }

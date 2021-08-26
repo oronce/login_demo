@@ -2,10 +2,9 @@ package com.userView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.PseudoColumnUsage;
-import java.util.regex.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -16,12 +15,25 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import com.userController.User;
+
+import org.hibernate.userModel.dbOperations;
+
 import javax.swing.SwingUtilities;
 
 import java.awt.*;
+
+enum PageName{
+    LOGIN , SIGNUP
+}
+
 public class AppView extends JFrame implements ActionListener,MouseListener{
 
+     
     private IndexPage      indexPage ;
+    private PageName       pageName; 
     private JLabel         usernameLabel;
     private JTextField     usernameField;
     private boolean        isUsernameValid; 
@@ -34,30 +46,33 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     private JLabel         textLabel;
     private JLabel         signUpHyperlinkLabel;
     private JLabel         logInHyperlinkLabel;
-    private JLabel         usernameConstraintsLabel;  
-    private JLabel         passwordConstraintsLabel;
+    private JLabel         usernameErrorValidationMessage;  
+    private JLabel         passwordErrorValidationMessage;
     private ImageIcon      showPasswordIcon;
     private JLabel         showPassWordIconJLabel;
+    private DocumentListener usernameValidationListener, passwodValidationListener;
+    
 
     public AppView(){
 
-        //load
-        indexPage                = new IndexPage();
-        usernameLabel            = new JLabel("Username");
-        usernameField            = new JTextField();
-        passwordLabel            = new JLabel("password");
-        passwordField            = new JPasswordField() ;
-        showPasswordCheckBox     = new JCheckBox("");
-        logInButton              = new JButton("LogIn");
-        signUpButton             = new JButton("SignUp"); 
-        textLabel                = new JLabel("Don't have an account?");
-        signUpHyperlinkLabel     = new JLabel("SignUp");
-        logInHyperlinkLabel      = new JLabel("LogIn");  
-        usernameConstraintsLabel = new JLabel("");
-        passwordConstraintsLabel = new JLabel("");
-        showPasswordIcon         = new ImageIcon("/home/rocee/project/java_project/login_app/public/show_password.png",
+        //Intializing the instance variables
+        indexPage                      = new IndexPage();
+        usernameLabel                  = new JLabel("Username");
+        usernameField                  = new JTextField();
+        passwordLabel                  = new JLabel("password");
+        passwordField                  = new JPasswordField() ;
+        showPasswordCheckBox           = new JCheckBox("");
+        logInButton                    = new JButton("LogIn");
+        signUpButton                   = new JButton("SignUp"); 
+        textLabel                      = new JLabel("Don't have an account?");
+        signUpHyperlinkLabel           = new JLabel("SignUp");
+        logInHyperlinkLabel            = new JLabel("LogIn");  
+        usernameErrorValidationMessage = new JLabel("");
+        passwordErrorValidationMessage = new JLabel("");
+        showPasswordIcon               = new ImageIcon("/home/rocee/project/java_project/login_app/public/show_password.png",
                                          "a pretty but meaningless splat"); 
-        showPassWordIconJLabel = new JLabel("") ;                                
+        showPassWordIconJLabel         = new JLabel("") ;    
+        pageName                       =  PageName.SIGNUP;                             
         //
 
 
@@ -74,8 +89,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         signUpHyperlinkLabel.setBounds(355, 435, 50, 20);
         logInHyperlinkLabel.setBounds(365, 435, 50, 20);
 
-        usernameConstraintsLabel.setBounds(150, 260, 280, 100);
-        passwordConstraintsLabel.setBounds(150, 390, 150, 30);
+        usernameErrorValidationMessage.setBounds(150, 260, 280, 100);
+        passwordErrorValidationMessage.setBounds(150, 380, 150, 30);
 
         showPassWordIconJLabel.setIcon(showPasswordIcon);
         showPassWordIconJLabel.setBounds(320, 314, 100, 100);
@@ -86,75 +101,118 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         indexPage.add(passwordLabel);
         indexPage.add(passwordField);
         indexPage.add(showPasswordCheckBox);
-        indexPage.add(logInButton);
+        indexPage.add(signUpButton);
         indexPage.add(textLabel);
-        indexPage.add( signUpHyperlinkLabel);
-        indexPage.add(usernameConstraintsLabel);
-        indexPage.add(passwordConstraintsLabel);
+        indexPage.add(logInHyperlinkLabel);
+        indexPage.add(usernameErrorValidationMessage);
+        indexPage.add(passwordErrorValidationMessage);
         indexPage.add(showPassWordIconJLabel);
-
+        
         //Adding Event Handling
         logInButton.addActionListener(this);
         signUpButton.addActionListener(this);
         logInHyperlinkLabel.addMouseListener(this);
         signUpHyperlinkLabel.addMouseListener(this);
         usernameField.addActionListener(this);
-        showPasswordCheckBox.addActionListener(this);
-        usernameField.getDocument().addDocumentListener(new TextFieldListener(){
+        /* usernameField.addFocusListener(new FocusListener(){
+
+            
+            @Override
+            public void focusGained(FocusEvent arg0) {
+                // TODO Auto-generated method stub
+                System.out.println("we're out the field");
+            }
+
+            @Override
+            public void focusLost(FocusEvent arg0) {
+                System.out.println("isusernameValid in focusLost: " + isUsernameValid);
+                if (isUsernameValid) {
+
+                    Thread checkUsernameExist = new Thread() {
+                        public void run()
+                        {
+                            if( dbOperations.readByUsername(usernameField.getText()).isEmpty() == false){
+                                System.out.println(dbOperations.readByUsername(usernameField.getText()));
+                                
+                                System.out.println("we're in thread");
+                                usernameConstraintsLabel.setVisible(true);
+                                usernameConstraintsLabel.setText("!! username is already use ");
+                            }
+                        }
+                    };
+                    checkUsernameExist.start();  // Callback run()     
+                }
+            }
+            
+        } );
+         */
+
+
+        usernameValidationListener = new TextFieldListener(){
+            
             @Override
             public void insertUpdate(DocumentEvent event) {
+                
                 processUsernameValidation();
+               
             }
 
             public void removeUpdate(DocumentEvent event) {
+                
                 processUsernameValidation();
             }
 
             private void processUsernameValidation(){
                 isUsernameValid = true;
                 String userInput = usernameField.getText();
-
-                //no validation for empty string
-                if (usernameField.getText().length() == 0) {
-                    usernameConstraintsLabel.setText("! username is empty");
-                    return;
+                 //no validation for empty string
+                if(usernameField.getText().length() == 0) {
+                    isUsernameValid = false;
+                    usernameErrorValidationMessage.setText("!! username is empty");
+                    if(pageName == PageName.SIGNUP)return;
                 }
-                
-                //display error once a regex pattern doesn't match input
-                if (Utilities.isRegExPatternMatching("^[a-zA-Z0-9].*$", userInput ) == false ) {
-                    isUsernameValid = false;
-                    usernameConstraintsLabel.setText("! first character must be alphanumeric");
 
-                }else if ( Utilities.isRegExPatternMatching("^([\\w])+$", userInput) == false ) {
-                    isUsernameValid = false;
-                    usernameConstraintsLabel.setText("! only \"_\" metacharacter is allowed");
+                //those validation is only for signup form
+                if (pageName == PageName.SIGNUP) {
+                    
+                    //display error once a regex pattern doesn't match input
+                    if (Utilities.isRegExPatternMatching("^[a-zA-Z0-9].*$", userInput ) == false ) {
+                        isUsernameValid = false;
+                        usernameErrorValidationMessage.setText("! first character must be alphanumeric");
 
-                }else if (Utilities.isRegExPatternMatching("^.{3,}$", userInput) == false ) {
-                    isUsernameValid = false;
-                    usernameConstraintsLabel.setText("! at least 3 character");
+                    }else if ( Utilities.isRegExPatternMatching("^([\\w])+$", userInput) == false ) {
+                        isUsernameValid = false;
+                        usernameErrorValidationMessage.setText("! only \"_\" metacharacter is allowed");
+
+                    }else if (Utilities.isRegExPatternMatching("^.{3,}$", userInput) == false ) {
+                        isUsernameValid = false;
+                        usernameErrorValidationMessage.setText("! at least 3 character");
+                    }
                 }
-                
+
                 if (isUsernameValid) {
-                    usernameConstraintsLabel.setVisible(false);
+                    usernameErrorValidationMessage.setVisible(false);
                     usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
                     
                 }else{
-                    usernameConstraintsLabel.setVisible(true);
+                    usernameErrorValidationMessage.setVisible(true);
                     usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#FF4500")));
-                }
+                }  
             }
             
-        });
-        passwordField.getDocument().addDocumentListener(new TextFieldListener(){
+        };
+        passwodValidationListener  = new TextFieldListener(){
 
             @Override
             public void insertUpdate(DocumentEvent event) {
-               processPasswordValidation();
+                processPasswordValidation();
             }
         
             @Override
             public void removeUpdate(DocumentEvent event) {
-              processPasswordValidation();
+                //if signup or login link get cliked just clean the field
+                processPasswordValidation();
+                
             }
             
             private void processPasswordValidation(){
@@ -162,36 +220,52 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
                     @Override
                     public void run() {
                        isPasswordValid = true;
-                       if (passwordField.getPassword().length < 8) {
-                           passwordConstraintsLabel.setText("8 character at least");
-                           isPasswordValid = false;
-                       }
 
-                       if (passwordField.getPassword().length ==0 ) {
-                           passwordConstraintsLabel.setText("password is empty");
+                       //this occur only for signup page
+                       if (pageName == PageName.SIGNUP) {
+                            if (passwordField.getPassword().length < 8) {
+                                passwordErrorValidationMessage.setText("8 character at least");
+                                isPasswordValid = false;
+                            }
                        }
+                       
+
+                       if (passwordField.getPassword().length == 0 ) { 
+                           isPasswordValid = false;
+                           passwordErrorValidationMessage.setText("!! password is empty");
+                        }
 
                        if (isPasswordValid) {
-                            passwordConstraintsLabel.setVisible(false);
+                            passwordErrorValidationMessage.setVisible(false);
                             passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
                         }else{
-                            passwordConstraintsLabel.setVisible(true);
+                            passwordErrorValidationMessage.setVisible(true);
                             passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#FF4500")));
                         }
                     }
                 };       
                 SwingUtilities.invokeLater(doPasswordValidation);
             }
-        });
+        };
+
+        showPasswordCheckBox.addActionListener(this);
+        usernameField.getDocument().addDocumentListener(usernameValidationListener);
+        
+
+        passwordField.getDocument().addDocumentListener(passwodValidationListener);
 
         
 
         //test section and addStyleToComponent
-        usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
-        passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#228B22")));
+
+        usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#666")));
+        passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#666")));
+
+        signUpButton.setForeground(Color.BLACK);
+        signUpButton.setBackground(Color.WHITE);
         
         passwordField.setEchoChar('*');
-        
+
         
 
         logInHyperlinkLabel.setForeground(Color.BLUE.darker());
@@ -199,8 +273,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         signUpHyperlinkLabel.setForeground(Color.BLUE.darker());
         signUpHyperlinkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        usernameConstraintsLabel.setForeground(Color.decode("#CD5C5C"));
-        passwordConstraintsLabel.setForeground(Color.decode("#CD5C5C"));
+        usernameErrorValidationMessage.setForeground(Color.decode("#CD5C5C"));
+        passwordErrorValidationMessage.setForeground(Color.decode("#CD5C5C"));
 
         //build
         setLocation(600, 150);
@@ -214,13 +288,39 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         
     }
 
-    /* public void load() {
-        IndexPage indexPage = new IndexPage();
-        JLabel usernameLabel = new JLabel("Username");
+    public void  animeConstraintLabel (final JLabel label) {
+        final int UPDATE_RATE = 30;
+        new Thread() {
+           
+            public void run()
+            {  
+                int labelXPosition = 150;
+                int labelYPosition = label.getY();
+                int labelWidht     = label.getWidth();
+                int labelHheight   = label.getHeight();
+               
+                System.out.println(labelXPosition);
+                for (int i = 0; i < 5; i++) {
+                    label.setBounds(++labelXPosition, labelYPosition, labelWidht, labelHheight);
+                    repaint();
+                    try {
+                    	Toolkit.getDefaultToolkit().sync();
+                        Thread.sleep(1000 / UPDATE_RATE);  // milliseconds
+                    } catch (InterruptedException ex) { }
+                }
 
-        JButton signUpButton = new JButton("Signup");
-        JButton logInButton = new JButton("LogIn");
-    } */
+                for (int i = 0; i < 5; i++) {
+                    label.setBounds(--labelXPosition, labelYPosition, labelWidht, labelHheight);
+                    try {
+                    	Toolkit.getDefaultToolkit().sync();
+                        Thread.sleep(1000 / UPDATE_RATE);  // milliseconds
+                    } catch (InterruptedException ex) { }
+                }
+               
+            }
+        }.start();  // Callback run()
+        System.out.println("number of Active Thread " + Thread.activeCount()); 
+    }
 
     public void addComponentsToPane() {
         
@@ -241,12 +341,48 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
             System.out.println(true);
         }
       
+        if (e.getSource() == signUpButton) {
+            char[] passwordArray = passwordField.getPassword();
+            String password="";
+
+            if(isPasswordValid && isUsernameValid){
+                
+                password = Utilities.arrayToString(passwordArray);
+                User user = new User(usernameField.getText(), password);
+                dbOperations.CreateUser(user);
+            }else{
+
+                //i should add usernameEmpty process(like checKforEmpty method)
+                checKForEmptyFields();
+                if(!isPasswordValid) animeConstraintLabel(passwordErrorValidationMessage);
+                if(!isUsernameValid) animeConstraintLabel(usernameErrorValidationMessage);
+                
+            }
+
+        }
         if (e.getSource() == logInButton) {
-            String userText;
-            
-            userText = usernameField.getText();
-            if(userText.charAt(1)==1);
-            System.out.println(userText);
+            char[] passwordArray = passwordField.getPassword();
+            String password="";
+            boolean isEmpty=true;
+            if(isPasswordValid && isUsernameValid){
+                
+                password = Utilities.arrayToString(passwordArray);
+                User user = new User(usernameField.getText(), password);
+                isEmpty = dbOperations.readByUsername(user.getUsername()).isEmpty()  ;
+                if (isEmpty) {
+                    System.out.println("username or password is wrong");
+                }else{
+                    System.out.println("sucessfully connect");
+                }
+            }else{
+                //i should add usernameEmpty process(like checKforEmpty method)
+                
+                checKForEmptyFields();
+
+                if(!isPasswordValid) animeConstraintLabel(passwordErrorValidationMessage);
+                if(!isUsernameValid) animeConstraintLabel(usernameErrorValidationMessage);
+                
+            }
         }
 
         if(showPasswordCheckBox.isSelected()){
@@ -261,32 +397,71 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == signUpHyperlinkLabel ) {
+
+            pageName = PageName.SIGNUP;
             indexPage.remove(signUpHyperlinkLabel);
             indexPage.remove(logInButton);
+
+            setAllFIeldsToDefaultSetting();
+            
             indexPage.add(logInHyperlinkLabel);
             indexPage.add(signUpButton);
             textLabel.setText("Already have an account?");
             indexPage.repaint();
 
         }else if ( e.getSource() == logInHyperlinkLabel ){
+            pageName = PageName.LOGIN;
             indexPage.remove(logInHyperlinkLabel);
             indexPage.remove(signUpButton);
+
+            setAllFIeldsToDefaultSetting();
+
             indexPage.add(signUpHyperlinkLabel);
             indexPage.add(logInButton);
             textLabel.setText("Don't have an account?");
             indexPage.repaint();
-            
         }
-        System.out.println(e.getSource() == logInHyperlinkLabel);
+    }
+
+    public void setAllFIeldsToDefaultSetting() {
+        //remove Listener unless DocumentListener method will get fired
+        passwordField.getDocument().removeDocumentListener(passwodValidationListener);
+        usernameField.getDocument().removeDocumentListener(usernameValidationListener);
+        usernameField.setText("");
+        passwordField.setText("");
+        usernameField.getDocument().addDocumentListener(usernameValidationListener);
+        passwordField.getDocument().addDocumentListener(passwodValidationListener);
+
+        usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#666")));
+        passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#666")));
+        usernameErrorValidationMessage.setVisible(false);
+        passwordErrorValidationMessage.setVisible(false);
+    }
+
+    public void checKForEmptyFields() {
+        if (usernameField.getText().length()==0) {
+            usernameErrorValidationMessage.setVisible(true);
+            usernameErrorValidationMessage.setText("!! username is empty");
+            isUsernameValid = false;
+            usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#FF4500")));
+        }
+        if (passwordField.getPassword().length == 0) {
+            passwordErrorValidationMessage.setVisible(true);
+            passwordErrorValidationMessage.setText("!! password is empty");
+            isPasswordValid = false;
+            passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#FF4500")));
+        }
     }
          
 
     @Override
-    public void mouseEntered(MouseEvent arg0) {
+    public void mouseEntered(MouseEvent event) {
+        
     }
 
     @Override
-    public void mouseExited(MouseEvent arg0) {
+    public void mouseExited(MouseEvent event) {
+       
     }
 
     @Override

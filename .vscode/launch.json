@@ -1,0 +1,56 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch MobileNumberValidation",
+            "request": "launch",
+            "mainClass": "com.userController.MobileNumberValidation",
+            "projectName": "login_app"
+        },
+        {
+            "type": "java",
+            "name": "Launch ClientServerTest",
+            "request": "launch",
+            "mainClass": "com.userController.ClientServerTest",
+            "projectName": "login_app"
+        },
+        {
+            "type": "java",
+            "name": "Launch TelValidation",
+            "request": "launch",
+            "mainClass": "com.userController.TelValidation",
+            "projectName": "login_app"
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch App",
+            "request": "launch",
+            "mainClass": "com.userController.App",
+            "projectName": "login_app"
+        },
+        {
+            "type": "java",
+            "name": "Launch EnclosingClass",
+            "request": "launch",
+            "mainClass": "com.userView.EnclosingClass",
+            "projectName": "login_app"
+        },
+        {
+            "type": "java",
+            "name": "Launch dbOperations",
+            "request": "launch",
+            "mainClass": "org.hibernate.userModel.dbOperations",
+            "projectName": "login_app"
+        }
+    ]
+}
