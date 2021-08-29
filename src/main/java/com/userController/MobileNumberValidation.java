@@ -14,6 +14,10 @@ import java.awt.*;
 
 import com.userView.Utilities;
 
+/**
+ * it's for test some event firing by listeners
+ *
+ */
 public class MobileNumberValidation extends JFrame {
 
     private JButton clearButton ;

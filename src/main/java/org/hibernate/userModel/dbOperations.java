@@ -12,23 +12,25 @@ import org.hibernate.query.Query;
  */
 public class dbOperations {
 
-    public static void CreateUser(User user) {
+    public static int CreateUser(User user) {
         Session session = null;
         Transaction transaction = null;
+        int ID=0;
         try {
              
             session = HibernateUtils.getSession();
             //getting transaction object from session object
             transaction = session.beginTransaction();
           
-            session.persist(user);
-
+            ID = (Integer)session.save(user);
+        
             transaction.commit();
             session.close();
 
         } catch (Exception e) {
-            
+            System.err.println("Exeption occur While Create User");
         }
+        return ID;
     }
     
 
@@ -86,9 +88,10 @@ public class dbOperations {
         return users;
     }
 
-    public static List<User> readByUsernameAndGetId (String username) {
+    public static int readByUsernameAndGetId (String username) {
         Session session = null;
         List<User> users = null;
+        int ID=0;
         try {
             session = HibernateUtils.getSession();
             String queryStr = "FROM User  where username=:param1";
@@ -96,13 +99,18 @@ public class dbOperations {
             query.setParameter("param1", username);
 
             users = query.list();
-            
-            session.close();
-            
+            if (users.isEmpty()) {
+                session.close();
+                return 0;
+            }
+
+            ID = users.get(0).getId();
+
         } catch (Exception e) {
-            //TODO: handle exception
+           System.err.println("Exeption occur in readByUsernameAndGetId()");
+           e.printStackTrace();
         }
-        return users;
+        return ID;
     }
     
 

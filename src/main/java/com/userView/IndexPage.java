@@ -22,6 +22,7 @@ public class IndexPage extends JPanel {
         g.setFont(f1);
         g.setColor(Color.BLACK);
         g.drawString("HEY!! Welcome", 50, 110);
+        g.drawRect(-2, 175, 200, 50);
     }
 
     public void setComponentVisible() {

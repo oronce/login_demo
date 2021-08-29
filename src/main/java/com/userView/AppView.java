@@ -337,10 +337,6 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == usernameField) {
-            System.out.println(true);
-        }
-      
         if (e.getSource() == signUpButton) {
             char[] passwordArray = passwordField.getPassword();
             String password="";
@@ -358,8 +354,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
                 if(!isUsernameValid) animeConstraintLabel(usernameErrorValidationMessage);
                 
             }
-
         }
+
         if (e.getSource() == logInButton) {
             char[] passwordArray = passwordField.getPassword();
             String password="";
