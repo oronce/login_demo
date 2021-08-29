@@ -17,7 +17,8 @@ public class App
     public static void main( String[] args ){
 
         //AppView appView = new AppView();
-        dbOperations.CreateUser(new User("olivier", "password"));       
+        int id = dbOperations.CreateUser(new User("livier", "password"));    
+        System.out.println(id);   
     } 
 }
 
