@@ -1,12 +1,18 @@
 package com.userController;
 
 
-import com.mysql.cj.xdevapi.SessionFactory;
+
 import com.userView.AppView;
 import com.userView.Utilities;
 
 import org.hibernate.userModel.HibernateUtils;
 import org.hibernate.userModel.dbOperations;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 /**
  * run appliction
@@ -16,10 +22,16 @@ public class App
 {
     public static void main( String[] args ){
 
-        //AppView appView = new AppView();
-        int id = dbOperations.CreateUser(new User("livier", "password"));    
-        System.out.println(id);   
+        //SessionFactory factory = getSessionFactory();
+       
+        dbOperations.CreateUser(new User("username", "password"));
+        System.out.println("users: " +  dbOperations.readAllUser());
+        
+    
+
     } 
+
+    
 }
 
 

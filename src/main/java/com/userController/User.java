@@ -8,15 +8,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-
+import javax.persistence.Table;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "User")
 public class User {
     
     private int id;
+    @Column(name = "username")
     private String username;
+    @Column
     private String password;
 
     @Column

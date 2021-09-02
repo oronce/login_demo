@@ -34,8 +34,7 @@ public class AppTest
 
     @Test
     public void testDatabaseConnectio(){
-        HibernateUtils.loadSessionFactory();
-        assertNotNull(HibernateUtils.getSession());
+        
     }
 
     @Test
