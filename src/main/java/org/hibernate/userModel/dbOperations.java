@@ -63,17 +63,7 @@ public class dbOperations {
         return ID;
     }
 
-    public static void main(String[] args) {
-        dbOperations.buildSessionFactory("hibernateTest.cfg.xml");
-        dbOperations.CreateUser(new User("oronce", "ebe"));
-        User user= dbOperations.readById(1);
-        dbOperations.readById(1);
-        dbOperations.readById(1);
-        dbOperations.readById(1);
-        dbOperations.readById(1);
-        dbOperations.readById(1);
-        sessionFactory.close();
-    }
+   
     
 
     public static List<User> readAllUser() {

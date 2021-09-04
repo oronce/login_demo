@@ -15,6 +15,11 @@ public class Utilities {
         }  
     }
     
+    /**
+    *convert an array of char to String
+    *@param charArray array of char
+    *@return string from char array
+    */
     public static String arrayToString(char[] charArray){
         String str = "";
         for(int i=0; i<charArray.length;  ++i ){
