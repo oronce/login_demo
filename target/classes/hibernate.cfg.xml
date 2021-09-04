@@ -8,5 +8,6 @@
         <property name="hibernate.connection.password">root</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
         <property name="show_sql">true</property>
+        <mapping class="com.userController.User" />
     </session-factory>
 </hibernate-configuration>

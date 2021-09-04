@@ -3,7 +3,11 @@ package org.hibernate.userModel;
 import java.util.List;
 import com.userController.User;
 import org.hibernate.Transaction;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 /**
@@ -12,13 +16,38 @@ import org.hibernate.query.Query;
  */
 public class dbOperations {
 
+    private static SessionFactory sessionFactory;
+
+    /**
+     * build and return a sessionFactory
+     * @param hibernateConfigFile the hibernate config file name 
+     * @return The SessionFactory.
+     */
+    public static SessionFactory buildSessionFactory(String hibernateConfigFile) {
+       
+        if(hibernateConfigFile == null) hibernateConfigFile = "hibernate.cfg.xml";
+        try {
+            final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
+                .configure(hibernateConfigFile) // configures settings from hibernate.cfg.xml
+                .build();
+         
+                sessionFactory = new MetadataSources(registry)
+                .buildMetadata().buildSessionFactory();
+         
+        } catch (Exception e) {
+            System.err.println("error while creating sessionFactory");
+            e.printStackTrace();
+        }
+        return sessionFactory;
+    }
+
     public static int CreateUser(User user) {
         Session session = null;
         Transaction transaction = null;
         int ID=0;
         try {
              
-            session = HibernateUtils.getSession();
+            session = sessionFactory.openSession();
             //getting transaction object from session object
             transaction = session.beginTransaction();
           
@@ -29,8 +58,21 @@ public class dbOperations {
 
         } catch (Exception e) {
             System.err.println("Exeption occur While Create User");
+            e.printStackTrace();
         }
         return ID;
+    }
+
+    public static void main(String[] args) {
+        dbOperations.buildSessionFactory("hibernateTest.cfg.xml");
+        dbOperations.CreateUser(new User("oronce", "ebe"));
+        User user= dbOperations.readById(1);
+        dbOperations.readById(1);
+        dbOperations.readById(1);
+        dbOperations.readById(1);
+        dbOperations.readById(1);
+        dbOperations.readById(1);
+        sessionFactory.close();
     }
     
 
@@ -38,7 +80,7 @@ public class dbOperations {
         Session session = null;
         List<User> users = null;
         try {
-            session = HibernateUtils.getSession();
+            session = sessionFactory.openSession();
             String queryStr = "FROM User";
             Query query = session.createQuery(queryStr);
             users = query.list();
@@ -57,7 +99,7 @@ public class dbOperations {
         Transaction transaction = null;
         User user = null;
         try {
-            session = HibernateUtils.getSession();
+            session = sessionFactory.openSession();
             //getting transaction object from session object
             transaction = session.beginTransaction();
             user = session.find(User.class, userId);
@@ -75,7 +117,7 @@ public class dbOperations {
         Session session = null;
         List<User> users = null;
         try {
-            session = HibernateUtils.getSession();
+            session = sessionFactory.openSession();
             String queryStr = "FROM User  where username=:param1";
             Query query = session.createQuery(queryStr);
             query.setParameter("param1", username);
@@ -93,7 +135,7 @@ public class dbOperations {
         List<User> users = null;
         int ID=0;
         try {
-            session = HibernateUtils.getSession();
+            session = sessionFactory.openSession();
             String queryStr = "FROM User  where username=:param1";
             Query query = session.createQuery(queryStr);
             query.setParameter("param1", username);
@@ -120,7 +162,7 @@ public class dbOperations {
 
         try {
              
-            session = HibernateUtils.getSession();
+            session = sessionFactory.openSession();
             //getting transaction object from session object
             transaction = session.beginTransaction();
             session.merge(user);
@@ -134,12 +176,12 @@ public class dbOperations {
         }
     }
 
-    public void deleteUserById(int userId) {
+    public static void deleteUserById(int userId) {
         Session session = null;
         Transaction transaction = null;
         User user;
         try {
-            session = HibernateUtils.getSession();
+            session = sessionFactory.openSession();
             //getting transaction object from session object
             transaction = session.beginTransaction();
             user = session.find(User.class, userId);

@@ -22,16 +22,11 @@ public class App
 {
     public static void main( String[] args ){
 
-        //SessionFactory factory = getSessionFactory();
+        SessionFactory factory = dbOperations.buildSessionFactory(null);
        
         dbOperations.CreateUser(new User("username", "password"));
-        System.out.println("users: " +  dbOperations.readAllUser());
-        
-    
-
+       
     } 
-
-    
 }
 
 
