@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -36,6 +37,7 @@ public class MobileNumberValidation extends JFrame {
         mobileNumberLabel     = new JLabel("Tel");
         errorMessage = new JLabel("Tel is empty");
 
+
         setSize(500, 500);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,6 +56,8 @@ public class MobileNumberValidation extends JFrame {
         mobileNumberLabel.setBounds(160, 170, 100, 20);
         errorMessage.setBounds(210, 190, 300,20);
 
+
+        JOptionPane.showMessageDialog(this, "sucessfully connect");
 
         //components style
         errorMessage.setForeground(Color.decode("#CD5C5C"));

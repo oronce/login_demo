@@ -17,14 +17,13 @@ public class App
 {
     public static void main( String[] args ){
 
-        /* SessionFactory factory = dbOperations.buildSessionFactory(null);
+        SessionFactory factory = dbOperations.buildSessionFactory(null);
        
-        dbOperations.CreateUser(new User("damn it", "password"));
-
-        factory.close(); */
-
         new AppView();
+
        
+        
+        
     } 
 }
 

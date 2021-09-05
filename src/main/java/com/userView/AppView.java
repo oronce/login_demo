@@ -14,8 +14,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.util.List;
+
 
 import com.userController.User;
 
@@ -50,6 +53,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     private JLabel         passwordErrorValidationMessage;
     private ImageIcon      showPasswordIcon;
     private JLabel         showPassWordIconJLabel;
+    private JOptionPane    dialogBox; 
     private DocumentListener usernameValidationListener, passwodValidationListener;
     
 
@@ -72,8 +76,9 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         showPasswordIcon               = new ImageIcon("/home/rocee/project/java_project/login_app/public/show_password.png",
                                          "a pretty but meaningless splat"); 
         showPassWordIconJLabel         = new JLabel("") ;    
+        dialogBox                      = new JOptionPane();    
         pageName                       =  PageName.SIGNUP;                             
-        //
+        
 
 
         //set loacation and size of components
@@ -288,7 +293,11 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         
     }
 
-    public void  animeConstraintLabel (final JLabel label) {
+    /** 
+    *anime only usernamefield and passwordfield label from right to left
+    *@param label label we want anime
+    */ 
+    public void  animeErrorMessageLabel (final JLabel label) {
         final int UPDATE_RATE = 30;
         new Thread() {
            
@@ -337,46 +346,57 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        //if signUpButton is pressed
         if (e.getSource() == signUpButton) {
             char[] passwordArray = passwordField.getPassword();
             String password="";
 
             if(isPasswordValid && isUsernameValid){
-                
                 password = Utilities.arrayToString(passwordArray);
                 User user = new User(usernameField.getText(), password);
                 dbOperations.CreateUser(user);
+                System.out.println("new user is sucessfully created");
             }else{
 
                 //i should add usernameEmpty process(like checKforEmpty method)
                 checKForEmptyFields();
-                if(!isPasswordValid) animeConstraintLabel(passwordErrorValidationMessage);
-                if(!isUsernameValid) animeConstraintLabel(usernameErrorValidationMessage);
+                if(!isPasswordValid)  animeErrorMessageLabel(passwordErrorValidationMessage);
+                if(!isUsernameValid)  animeErrorMessageLabel(usernameErrorValidationMessage);
                 
             }
         }
 
+        //if logInButton is pressed
         if (e.getSource() == logInButton) {
             char[] passwordArray = passwordField.getPassword();
             String password="";
-            boolean isEmpty=true;
+            List<User> users = null;
             if(isPasswordValid && isUsernameValid){
                 
                 password = Utilities.arrayToString(passwordArray);
                 User user = new User(usernameField.getText(), password);
-                isEmpty = dbOperations.readByUsername(user.getUsername()).isEmpty()  ;
-                if (isEmpty) {
+                users = dbOperations.readByUsername(user.getUsername());
+                System.out.println("\n"+users+"\n");
+                if (users.isEmpty() ) {
+
                     System.out.println("username or password is wrong");
-                }else{
-                    System.out.println("sucessfully connect");
+                    ShowUserCantConnectDiaogBox();
+
+                }else {
+                   
+                    if(users.get(0).getPassword().equals(password) == false ){
+                        ShowUserCantConnectDiaogBox();
+                        return;
+                    } 
+                    showSucessfullyConnectDialogBox();
                 }
             }else{
                 //i should add usernameEmpty process(like checKforEmpty method)
                 
                 checKForEmptyFields();
 
-                if(!isPasswordValid) animeConstraintLabel(passwordErrorValidationMessage);
-                if(!isUsernameValid) animeConstraintLabel(usernameErrorValidationMessage);
+                if(!isPasswordValid)  animeErrorMessageLabel(passwordErrorValidationMessage);
+                if(!isUsernameValid)  animeErrorMessageLabel(usernameErrorValidationMessage);
                 
             }
         }
@@ -447,6 +467,18 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
             isPasswordValid = false;
             passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#FF4500")));
         }
+    }
+
+    public void showSucessfullyConnectDialogBox(){
+        JOptionPane.showMessageDialog(indexPage,
+        "sucessfully connect");
+    }
+
+    public void ShowUserCantConnectDiaogBox() {
+        JOptionPane.showMessageDialog(indexPage,
+        "username or password is wrong",
+        "Connection error",
+        JOptionPane.ERROR_MESSAGE);
     }
          
 
