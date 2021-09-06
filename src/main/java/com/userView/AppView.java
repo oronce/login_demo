@@ -353,6 +353,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
 
             if(isPasswordValid && isUsernameValid){
                 password = Utilities.arrayToString(passwordArray);
+                password = Utilities.hash(password);
                 User user = new User(usernameField.getText(), password);
                 dbOperations.CreateUser(user);
                 System.out.println("new user is sucessfully created");
