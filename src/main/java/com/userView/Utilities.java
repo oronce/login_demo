@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class Utilities {
     public static boolean isRegExPatternMatching(String regExPattern, String stringToMatch) {
         Pattern pattern = Pattern.compile( regExPattern);
@@ -31,7 +32,7 @@ public class Utilities {
     }
 
     /**
-    *convert an array of char to String
+    *hash the password
     *@param password array of char
     *@return string of password hashed
     */

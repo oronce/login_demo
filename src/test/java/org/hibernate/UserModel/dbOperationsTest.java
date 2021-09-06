@@ -30,7 +30,6 @@ public class dbOperationsTest {
         int id = 0;
         User user = new User("lode", "haha");
         id = dbOperations.CreateUser(user);
-        System.out.println("id is :" + id);
         assertTrue("id must be great than 0", id > 0);
     }
     
@@ -39,7 +38,6 @@ public class dbOperationsTest {
         List<User> users = null;
         dbOperations.CreateUser(new User("pierre", "passpass"));
         users = dbOperations.readAllUser();
-        System.out.println("all users is :");
         assertFalse(users.isEmpty());
     }
 
@@ -48,7 +46,6 @@ public class dbOperationsTest {
         int id = 1;
         User user = null;
         user = dbOperations.readById(id);
-        System.out.println(user);
         assertNotNull(user);
     }
 

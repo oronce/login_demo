@@ -2,7 +2,8 @@ package com.userView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -53,7 +54,6 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     private JLabel         passwordErrorValidationMessage;
     private ImageIcon      showPasswordIcon;
     private JLabel         showPassWordIconJLabel;
-    private JOptionPane    dialogBox; 
     private DocumentListener usernameValidationListener, passwodValidationListener;
     
 
@@ -75,8 +75,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         passwordErrorValidationMessage = new JLabel("");
         showPasswordIcon               = new ImageIcon("/home/rocee/project/java_project/login_app/public/show_password.png",
                                          "a pretty but meaningless splat"); 
-        showPassWordIconJLabel         = new JLabel("") ;    
-        dialogBox                      = new JOptionPane();    
+        showPassWordIconJLabel         = new JLabel("") ;       
         pageName                       =  PageName.SIGNUP;                             
         
 
@@ -119,38 +118,35 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         logInHyperlinkLabel.addMouseListener(this);
         signUpHyperlinkLabel.addMouseListener(this);
         usernameField.addActionListener(this);
-        /* usernameField.addFocusListener(new FocusListener(){
-
+        usernameField.addFocusListener(new FocusListener(){
+            
             
             @Override
             public void focusGained(FocusEvent arg0) {
-                // TODO Auto-generated method stub
-                System.out.println("we're out the field");
+               
             }
 
             @Override
             public void focusLost(FocusEvent arg0) {
-                System.out.println("isusernameValid in focusLost: " + isUsernameValid);
+                if(pageName == PageName.LOGIN) return;
                 if (isUsernameValid) {
 
                     Thread checkUsernameExist = new Thread() {
                         public void run()
                         {
                             if( dbOperations.readByUsername(usernameField.getText()).isEmpty() == false){
-                                System.out.println(dbOperations.readByUsername(usernameField.getText()));
-                                
-                                System.out.println("we're in thread");
-                                usernameConstraintsLabel.setVisible(true);
-                                usernameConstraintsLabel.setText("!! username is already use ");
+                                isUsernameValid = false;
+                                usernameErrorValidationMessage.setVisible(true);
+                                usernameErrorValidationMessage.setText("!! username is already use ");
                             }
                         }
                     };
                     checkUsernameExist.start();  // Callback run()     
                 }
             }
-            
+
         } );
-         */
+         
 
 
         usernameValidationListener = new TextFieldListener(){
@@ -308,7 +304,6 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
                 int labelWidht     = label.getWidth();
                 int labelHheight   = label.getHeight();
                
-                System.out.println(labelXPosition);
                 for (int i = 0; i < 5; i++) {
                     label.setBounds(++labelXPosition, labelYPosition, labelWidht, labelHheight);
                     repaint();
@@ -353,10 +348,10 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
 
             if(isPasswordValid && isUsernameValid){
                 password = Utilities.arrayToString(passwordArray);
-                password = Utilities.hash(password);
                 User user = new User(usernameField.getText(), password);
                 dbOperations.CreateUser(user);
-                System.out.println("new user is sucessfully created");
+                clearAllFields();
+                showSucessfullyRegisteredDialogBox();
             }else{
 
                 //i should add usernameEmpty process(like checKforEmpty method)
@@ -378,14 +373,16 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
                 User user = new User(usernameField.getText(), password);
                 users = dbOperations.readByUsername(user.getUsername());
                 System.out.println("\n"+users+"\n");
+
                 if (users.isEmpty() ) {
 
                     System.out.println("username or password is wrong");
                     ShowUserCantConnectDiaogBox();
 
                 }else {
-                   
-                    if(users.get(0).getPassword().equals(password) == false ){
+                    
+                    //hashing the password before compare
+                    if(users.get(0).getPassword().equals(Utilities.hash(password)) == false ){
                         ShowUserCantConnectDiaogBox();
                         return;
                     } 
@@ -419,7 +416,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
             indexPage.remove(signUpHyperlinkLabel);
             indexPage.remove(logInButton);
 
-            setAllFIeldsToDefaultSetting();
+            clearAllFields();
             
             indexPage.add(logInHyperlinkLabel);
             indexPage.add(signUpButton);
@@ -431,7 +428,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
             indexPage.remove(logInHyperlinkLabel);
             indexPage.remove(signUpButton);
 
-            setAllFIeldsToDefaultSetting();
+            clearAllFields();
 
             indexPage.add(signUpHyperlinkLabel);
             indexPage.add(logInButton);
@@ -440,7 +437,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         }
     }
 
-    public void setAllFIeldsToDefaultSetting() {
+    public void clearAllFields() {
         //remove Listener unless DocumentListener method will get fired
         passwordField.getDocument().removeDocumentListener(passwodValidationListener);
         usernameField.getDocument().removeDocumentListener(usernameValidationListener);
@@ -453,6 +450,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#666")));
         usernameErrorValidationMessage.setVisible(false);
         passwordErrorValidationMessage.setVisible(false);
+        isPasswordValid=false;
+        isUsernameValid=false;
     }
 
     public void checKForEmptyFields() {
@@ -478,8 +477,14 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     public void ShowUserCantConnectDiaogBox() {
         JOptionPane.showMessageDialog(indexPage,
         "username or password is wrong",
-        "Connection error",
+        "wrong credentials",
         JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showSucessfullyRegisteredDialogBox() {
+        JOptionPane.showMessageDialog(indexPage, 
+        "sucessfully Registered"
+        );
     }
          
 

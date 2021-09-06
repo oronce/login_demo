@@ -2,6 +2,8 @@ package org.hibernate.userModel;
 
 import java.util.List;
 import com.userController.User;
+import com.userView.Utilities;
+
 import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -46,11 +48,13 @@ public class dbOperations {
         Transaction transaction = null;
         int ID=0;
         try {
-             
+
+            //hash the password
+            user.setPassword(Utilities.hash(user.getPassword()));
+
             session = sessionFactory.openSession();
             //getting transaction object from session object
             transaction = session.beginTransaction();
-          
             ID = (Integer)session.save(user);
         
             transaction.commit();
