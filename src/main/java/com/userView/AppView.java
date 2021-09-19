@@ -47,6 +47,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     private JCheckBox      showPasswordCheckBox;
     private JButton        logInButton;
     private JButton        signUpButton;
+    private JLabel         loginOrSignupLabel;  
     private JLabel         textLabel;
     private JLabel         signUpHyperlinkLabel;
     private JLabel         logInHyperlinkLabel;
@@ -68,6 +69,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         showPasswordCheckBox           = new JCheckBox("");
         logInButton                    = new JButton("LogIn");
         signUpButton                   = new JButton("SignUp"); 
+        loginOrSignupLabel             = new JLabel("SignUp");  
         textLabel                      = new JLabel("Don't have an account?");
         signUpHyperlinkLabel           = new JLabel("SignUp");
         logInHyperlinkLabel            = new JLabel("LogIn");  
@@ -86,10 +88,12 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         passwordLabel.setBounds(70, 350, 80, 20);
         passwordField.setBounds(150, 345, 170, 30);
         showPasswordCheckBox.setBounds(350, 347, 150, 30);
-        logInButton.setBounds(70, 430, 100, 30);
-        signUpButton.setBounds(70, 430, 100, 30);
-        textLabel.setBounds(175, 435, 190, 20);
 
+        logInButton.setBounds(70, 430, 100, 30);
+        signUpButton.setBounds(70, 430, 100, 30);   
+        loginOrSignupLabel.setBounds(15, 150, 250, 100);
+
+        textLabel.setBounds(175, 435, 190, 20);
         signUpHyperlinkLabel.setBounds(355, 435, 50, 20);
         logInHyperlinkLabel.setBounds(365, 435, 50, 20);
 
@@ -111,6 +115,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         indexPage.add(usernameErrorValidationMessage);
         indexPage.add(passwordErrorValidationMessage);
         indexPage.add(showPassWordIconJLabel);
+        indexPage.add(loginOrSignupLabel);
         
         //Adding Event Handling
         logInButton.addActionListener(this);
@@ -118,34 +123,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         logInHyperlinkLabel.addMouseListener(this);
         signUpHyperlinkLabel.addMouseListener(this);
         usernameField.addActionListener(this);
-        usernameField.addFocusListener(new FocusListener(){
-            
-            
-            @Override
-            public void focusGained(FocusEvent arg0) {
-               
-            }
-
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                if(pageName == PageName.LOGIN) return;
-                if (isUsernameValid) {
-
-                    Thread checkUsernameExist = new Thread() {
-                        public void run()
-                        {
-                            if( dbOperations.readByUsername(usernameField.getText()).isEmpty() == false){
-                                isUsernameValid = false;
-                                usernameErrorValidationMessage.setVisible(true);
-                                usernameErrorValidationMessage.setText("!! username is already use ");
-                            }
-                        }
-                    };
-                    checkUsernameExist.start();  // Callback run()     
-                }
-            }
-
-        } );
+        MyFocusListener focusListener = new MyFocusListener(this);
+        usernameField.addFocusListener(focusListener);
          
 
 
@@ -258,6 +237,9 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
         
 
         //test section and addStyleToComponent
+
+
+        loginOrSignupLabel.setFont(new Font("Serif", Font.BOLD, 30));
 
         usernameField.setBorder(BorderFactory.createLineBorder(Color.decode("#666")));
         passwordField.setBorder(BorderFactory.createLineBorder(Color.decode("#666")));
@@ -389,7 +371,6 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
                     showSucessfullyConnectDialogBox();
                 }
             }else{
-                //i should add usernameEmpty process(like checKforEmpty method)
                 
                 checKForEmptyFields();
 
@@ -504,5 +485,53 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
 
     @Override
     public void mouseReleased(MouseEvent arg0) {
+    }
+
+
+    
+    public PageName getPageName() {
+        return this.pageName;
+    }
+
+    public JTextField getUsernameField() {
+        return this.usernameField;
+    }
+
+    public void setUsernameField(JTextField usernameField) {
+        this.usernameField = usernameField;
+    }
+
+    public void setIsUsernameValid(boolean isValid) {
+        this.isUsernameValid=isValid;
+    }
+    
+    public boolean isIsUsernameValid() {
+        return this.isUsernameValid;
+    }
+
+    public boolean getIsUsernameValid() {
+        return this.isUsernameValid;
+    }
+
+    public boolean isIsPasswordValid() {
+        return this.isPasswordValid;
+    }
+
+    public boolean getIsPasswordValid() {
+        return this.isPasswordValid;
+    }
+
+    public JPasswordField getPasswordField() {
+        return this.passwordField;
+    }
+
+    public void setPasswordField(JPasswordField passwordField) {
+        this.passwordField = passwordField;
+    }
+
+   
+
+    public JLabel getUsernameErrorValidationMessage() {
+        return this.usernameErrorValidationMessage;
     }
 }

@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch ImagePanel",
+            "request": "launch",
+            "mainClass": "com.userController.ImagePanel",
+            "projectName": "login_app"
+        },
+        {
+            "type": "java",
+            "name": "Launch MyCanvas",
+            "request": "launch",
+            "mainClass": "com.userController.MyCanvas",
+            "projectName": "login_app"
+        },
+        {
+            "type": "java",
             "name": "Launch MobileNumberValidation",
             "request": "launch",
             "mainClass": "com.userController.MobileNumberValidation",
