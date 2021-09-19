@@ -393,6 +393,7 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == signUpHyperlinkLabel ) {
 
+            loginOrSignupLabel.setText("SignUp");
             pageName = PageName.SIGNUP;
             indexPage.remove(signUpHyperlinkLabel);
             indexPage.remove(logInButton);
@@ -405,6 +406,8 @@ public class AppView extends JFrame implements ActionListener,MouseListener{
             indexPage.repaint();
 
         }else if ( e.getSource() == logInHyperlinkLabel ){
+
+            loginOrSignupLabel.setText("LogIn");
             pageName = PageName.LOGIN;
             indexPage.remove(logInHyperlinkLabel);
             indexPage.remove(signUpButton);

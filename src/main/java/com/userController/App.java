@@ -18,7 +18,7 @@ public class App
 {
     public static void main( String[] args ) {
         
-        //dbsetUp();
+        dbsetUp();
         lunchGUi();
         
     } 

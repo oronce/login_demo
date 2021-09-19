@@ -11,6 +11,7 @@ public class IndexPage extends JPanel {
         setPreferredSize(jpanSize);
         setLocation(0, 0);
         setLayout(null);
+        setBackground(new Color(247, 245, 245));
     }
 
     @Override
