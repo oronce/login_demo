@@ -11,6 +11,7 @@
 
 #### -as you can see above i implement a credentials validation for both fields, for instance username must not contain metacharacter, must start with alphanumeric characters and must be atleast 3 characters long to be valid
 
-![recordinDB](https://user-images.githubusercontent.com/48497693/133981044-d8c70a7f-b9e7-48f1-896d-4b62cf9b456f.png)
+![realrecordinDB](https://user-images.githubusercontent.com/48497693/133983199-72d355a2-c3ad-40d3-a642-009d796b4dce.png)
 
 #### -the image above show that user credentials was sucessfully registered in database
+
