@@ -8,6 +8,9 @@
 ## Signup interface
 
 ![signupDemo](https://user-images.githubusercontent.com/48497693/133979762-0ed33ce4-c168-4359-ac8e-e02a53f4d7dd.gif)
-i implement a credentials validation for both fields, for instance username must not contain metacharacter, must start with alphanumeric characters and must be atleast 3 characters long to be valid
+
+#### -i implement a credentials validation for both fields, for instance username must not contain metacharacter, must start with alphanumeric characters and must be atleast 3 characters long to be valid
+
 ![recordinDB](https://user-images.githubusercontent.com/48497693/133981044-d8c70a7f-b9e7-48f1-896d-4b62cf9b456f.png)
-the image above show that user credentials was sucessfully registered in database
+
+#### -the image above show that user credentials was sucessfully registered in database
